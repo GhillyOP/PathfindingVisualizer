@@ -1,0 +1,9 @@
+.PathFindingVisualizer {
+  display: flex;
+  position: absolute;
+  bottom: 0;
+  left: 0.75%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
