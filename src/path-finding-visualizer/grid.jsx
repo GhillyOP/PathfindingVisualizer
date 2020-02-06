@@ -154,8 +154,8 @@ function createNode(col, row) {
     isEnd = true;
 
   return {
-    col,
     row,
+    col,
     isStart: isStart,
     isEnd: isEnd,
     distance: Infinity,

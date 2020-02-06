@@ -7,13 +7,27 @@ export default class MinHeap {
     constructor() {
         this.heap = [];
         this.map = new Map();
-
-        this.test();
     }
 
     getMin() {
         return this.heap[0];
     }
+
+    isHeap() {
+        // Start from root and go till the last internal 
+        // node 
+        for (let i = 0; i <= (this.heap.length - 2) / 2; i++) {
+            // If left child is greater, return false 
+            if (this.heap[2 * i + 1] > this.heap[i])
+                return false;
+
+            // If right child is greater, return false 
+            if (2 * i + 2 < this.heap.length && this.heap[2 * i + 2] > this.heap[i])
+                return false;
+        }
+        return true;
+    }
+
 
     insert(node) {
         this.heap.push(node);
@@ -72,9 +86,11 @@ export default class MinHeap {
         }
     }
 
-    changeDistance(node, distance) {
+    changeDistance(mapindex, distance) {
         // get node in map and set distance
-        var heapIndex = this.map.get(`${node.row}:${node.col}`);
+        // var heapIndex = this.map.get(`${node.row}:${node.col}`);
+        let heapIndex = this.map.get(mapindex);
+
         this.heap[heapIndex].distance = distance;
 
         // heapify tree
@@ -96,6 +112,11 @@ export default class MinHeap {
         // console.log(this.heap[heapIndex].distance)
 
 
+    }
+
+    setPreviousNode(mapindex, previousNode) {
+        let heapIndex = this.map.get(mapindex);
+        this.heap[heapIndex].previousNode = previousNode;
     }
 
     test() {
