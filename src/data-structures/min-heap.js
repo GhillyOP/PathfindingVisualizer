@@ -13,6 +13,12 @@ export default class MinHeap {
         return this.heap[0];
     }
 
+    getNodeAt(key){
+        const heapIndex = this.map.get(key);
+        const node = this.heap[heapIndex];
+        return node;
+    }
+
     isHeap() {
         // Start from root and go till the last internal 
         // node 
@@ -86,10 +92,13 @@ export default class MinHeap {
         }
     }
 
-    changeDistance(mapindex, distance) {
+    changeDistance(node, distance) {
         // get node in map and set distance
         // var heapIndex = this.map.get(`${node.row}:${node.col}`);
-        let heapIndex = this.map.get(mapindex);
+        let heapIndex = this.map.get(`${node.row}:${node.col}`);
+
+        // console.log(`${node.row}:${node.col}`)
+        // console.log(this.heap[heapIndex])
 
         this.heap[heapIndex].distance = distance;
 
@@ -114,8 +123,8 @@ export default class MinHeap {
 
     }
 
-    setPreviousNode(mapindex, previousNode) {
-        let heapIndex = this.map.get(mapindex);
+    setPreviousNode(node, previousNode) {
+        let heapIndex = this.map.get(`${node.row}:${node.col}`);
         this.heap[heapIndex].previousNode = previousNode;
     }
 
