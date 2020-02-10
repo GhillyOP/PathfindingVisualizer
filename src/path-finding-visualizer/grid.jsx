@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Node from "./node";
 import NodeStates from "./node-states";
 import "./grid.css";
-import { dijkstra } from "../algorithms/dijkstra";
+import { dijkstra, getShortestPath } from "../algorithms/dijkstra";
 
 let startIndex = [10, 5];
 let endIndex = [10, 30];
@@ -16,13 +16,21 @@ export default class Grid extends Component {
     this.updateArrayLength();
   }
 
-  visualize() {
+  visualizeVisistedNodes() {
     const grid = this.state.grid;
     let visitedNodesInOrder = dijkstra(grid, grid[10][5], grid[10][30]);
 
     this.isVisusualizing = true;
 
     for (let i = 1; i < visitedNodesInOrder.length; i++) {
+
+      if(i === visitedNodesInOrder.length - 1){
+        setTimeout(() => {
+          this.visualizeShortestPath()
+        }, 5 * i);
+        return;
+      }
+
       const row = visitedNodesInOrder[i].row;
       const col = visitedNodesInOrder[i].col;
 
@@ -30,11 +38,26 @@ export default class Grid extends Component {
       const node = document.getElementById(`${row}:${col}`);
 
       setTimeout(() => {
-        if(node !== null)
-            node.className = "VisitedNode";
-        if(i === visitedNodesInOrder.length - 1)
-          this.isVisusualizing = false;
+        if (node !== null) node.className = "VisitedNode";
+        if (i === visitedNodesInOrder.length - 1) this.isVisusualizing = false;
       }, 5 * i);
+    }
+  }
+
+  visualizeShortestPath() {
+    const grid = this.state.grid;
+    let shortestPath = getShortestPath(grid[10][30]);
+
+    for (let i = 0; i < shortestPath.length; i++) {
+      const row = shortestPath[i].row;
+      const col = shortestPath[i].col;
+      grid[row][col] = shortestPath[i]
+      const node = document.getElementById(`${row}:${col}`);
+
+      setTimeout(() => {
+        if (node !== null) node.className = 'ShortestPathNode';
+        if (i === shortestPath.length - 1) this.isVisusualizing = false;
+      }, 40 * i);
     }
   }
 
@@ -97,8 +120,7 @@ export default class Grid extends Component {
   renderGrid() {
     return (
       <div className="Grid">
-        <button onClick={() => this.visualize()}>Visualize</button>
-
+        <button onClick={() => this.visualizeVisistedNodes()}>Visualize</button>
         {this.state.grid.map((row, rowI) => {
           return (
             <div key={rowI}>
@@ -146,12 +168,8 @@ function createNode(col, row) {
   let isStart = false;
   let isEnd = false;
 
-  if (row === startIndex[0] && col === startIndex[1])
-    isStart = true;
-  
-
-  else if (row === endIndex[0] && col === endIndex[1])
-    isEnd = true;
+  if (row === startIndex[0] && col === startIndex[1]) isStart = true;
+  else if (row === endIndex[0] && col === endIndex[1]) isEnd = true;
 
   return {
     row,

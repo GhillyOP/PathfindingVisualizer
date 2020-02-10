@@ -13,7 +13,7 @@ export default class MinHeap {
         return this.heap[0];
     }
 
-    getNodeAt(key){
+    getNodeAt(key) {
         const heapIndex = this.map.get(key);
         const node = this.heap[heapIndex];
         return node;
@@ -42,21 +42,20 @@ export default class MinHeap {
 
         while (index > 0) {
             let element = this.heap[index];
-            let parentIndex = Math.floor((index - 1) / 2);
-            let parent = this.heap[parentIndex];
+            let parent = this.heap[Math.floor((index - 1) / 2)];
 
-            if (parent.distance <= element.distance) break;
-            this.heap[index] = parent;
-            this.heap[parentIndex] = element;
-            index = parentIndex;
+            if (parent.distance < element.distance) break;
+
+
+            this.swap(index, Math.floor((index - 1) / 2))
+
+            index = Math.floor((index - 1) / 2);
         }
-
-        //set node heapIndex in map with it's index as key
-        this.map.set(`${node.row}:${node.col}`, index);
     }
 
     remove() {
         let smallest = this.heap[0];
+        this.map.delete(`${smallest.row}:${smallest.col}`);
         this.heap[0] = this.heap.pop();
         this.sinkDown(0);
         return smallest;
@@ -84,49 +83,39 @@ export default class MinHeap {
         }
         // swap
         if (smallest !== index) {
-            [this.heap[smallest], this.heap[index]] = [
-                this.heap[index],
-                this.heap[smallest]
-            ];
+            this.swap(index, smallest)
             this.sinkDown(smallest);
         }
     }
 
     changeDistance(node, distance) {
         // get node in map and set distance
-        // var heapIndex = this.map.get(`${node.row}:${node.col}`);
         let heapIndex = this.map.get(`${node.row}:${node.col}`);
-
-        // console.log(`${node.row}:${node.col}`)
-        // console.log(this.heap[heapIndex])
 
         this.heap[heapIndex].distance = distance;
 
         // heapify tree
-        while (heapIndex > 0 && this.heap[heapIndex].distance <= this.heap[Math.floor((heapIndex - 1) / 2)].distance) {
-            // swap the node with it's parent
-            const temp = this.heap[heapIndex];
-            this.heap[heapIndex] = this.heap[Math.floor((heapIndex - 1) / 2)];
-            this.heap[Math.floor((heapIndex - 1) / 2)] = temp;
-
-            // set the index to the parent index
+        while (heapIndex > 0 && this.heap[heapIndex].distance < this.heap[Math.floor((heapIndex - 1) / 2)].distance) {
+            this.swap(heapIndex, Math.floor((heapIndex - 1) / 2))
             heapIndex = Math.floor((heapIndex - 1) / 2);
         }
-        // console.log(heapIndex)
-        // console.log(`parent index: ${Math.floor((heapIndex - 1) / 2)}`)
-        // console.log(`parent distance: ${this.heap[Math.floor((heapIndex - 1) / 2)].distance}`)
-
-        // console.log(heapIndex >= 0)
-        // console.log(this.heap[heapIndex].distance <= this.heap[Math.floor((heapIndex - 1) / 2)].distance)
-        // console.log(this.heap[heapIndex].distance)
-
-
     }
 
     setPreviousNode(node, previousNode) {
         let heapIndex = this.map.get(`${node.row}:${node.col}`);
         this.heap[heapIndex].previousNode = previousNode;
     }
+
+
+    swap(index1, index2){
+        const temp = this.heap[index1];
+        this.heap[index1] = this.heap[index2];
+        this.heap[index2] = temp;
+
+        this.map.set(`${this.heap[index1].row}:${this.heap[index1].col}`, index1)
+        this.map.set(`${this.heap[index2].row}:${this.heap[index2].col}`, index2)
+    }
+
 
     test() {
         const node1 = {
