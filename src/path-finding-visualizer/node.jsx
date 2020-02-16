@@ -15,7 +15,6 @@ export default class Node extends Component {
   /** Make sure not all nodes update every time the grid renders */
   shouldComponentUpdate(nextProps) {
     const hasNodeStateChanged = this.props.nodeState !== nextProps.nodeState;
-
     return hasNodeStateChanged;
   }
 
@@ -46,8 +45,8 @@ export default class Node extends Component {
           onMouseUp={() => onMouseUp()}
           className="EndNode"
         ></div>
-      )}
-    else if (this.state.nodeState === NodeStates.UNVISITED) {
+      );
+    } else if (this.state.nodeState === NodeStates.UNVISITED) {
       return (
         <div
           id={`${row}:${col}`}
@@ -59,10 +58,19 @@ export default class Node extends Component {
         ></div>
       );
     } else if (this.state.nodeState === NodeStates.VISITED) {
-      return <div onMouseUp={() => onMouseUp()} className="VisitedNode"></div>;
+      return (
+        <div
+          id={`${row}:${col}`}
+          onMouseUp={() => onMouseUp()}
+          onMouseDown={() => onMouseDown()}
+          onMouseEnter={() => onMouseEnter(row, col)}
+          className="VisitedNode"
+        ></div>
+      );
     } else if (this.state.nodeState === NodeStates.WALL) {
       return (
         <div
+          id={`${row}:${col}`}
           onMouseUp={() => onMouseUp()}
           onMouseDown={() => onMouseDown()}
           className="WallNode"
