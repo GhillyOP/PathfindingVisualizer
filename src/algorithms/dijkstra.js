@@ -3,29 +3,19 @@ import MinHeap from "../data-structures/min-heap";
 
 export function execute(grid, startNode, endNode) {
     startNode.distance = 0;
-    const unvisitedNodes = getAllNodesHeap(grid);
+    let unvisitedNodes = new MinHeap();
+    unvisitedNodes = getAllNodesHeap(grid);
     const visitedNodesInOrder = [];
-
-
-    console.log(JSON.parse(JSON.stringify(grid)))
 
     while (unvisitedNodes.length !== 0) {
 
         const closestNode = unvisitedNodes.remove();
         const neighbours = getAvailableNeighboursHeap(closestNode, unvisitedNodes);
 
-        if (closestNode.nodeState === NodeStates.WALL) {
-            console.log('WALL')
-            continue;
-        }
+        if (closestNode.nodeState === NodeStates.WALL) continue;
         if (closestNode.distance === Infinity) return visitedNodesInOrder;
 
-
-        for (let i = 0; i < neighbours.length; i++) {
-
-            if (neighbours[i] === NodeStates.WALL) continue;
-            
-
+        for (let i = 0; i < neighbours.length; i++) {       
             unvisitedNodes.changeDistance(neighbours[i], closestNode.distance + 1);
             unvisitedNodes.setPreviousNode(neighbours[i], closestNode);
         }
@@ -43,6 +33,7 @@ export function getShortestPath(endNode) {
     const shortestPath = [];
     let currentNode = endNode;
     while (currentNode !== null) {
+        currentNode.nodeState = NodeStates.SHORTESTPATH;
         shortestPath.unshift(currentNode);
         currentNode = currentNode.previousNode;
     }
@@ -69,9 +60,8 @@ function getAvailableNeighboursHeap(node, heap) {
     if (leftNeighbour !== undefined)
         neighbours.push(leftNeighbour);
 
-
     return neighbours.filter(
-        neighbour => neighbours.nodeState !== NodeStates.VISITED
+        neighbour => neighbour.nodeState === NodeStates.UNVISITED
     );
 }
 
