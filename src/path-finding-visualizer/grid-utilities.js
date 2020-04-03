@@ -22,8 +22,6 @@ export const createGrid = (rowCount, colCount, startIndex, endIndex) => {
     if (row === startIndex[0] && col === startIndex[1]) isStart = true;
     else if (row === endIndex[0] && col === endIndex[1]) isEnd = true;
   
-    console.log(isStart)
-
     return {
       row,
       col,

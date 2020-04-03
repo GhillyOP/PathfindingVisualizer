@@ -15,7 +15,10 @@ export default class Node extends Component {
   /** Make sure not all nodes update every time the grid renders */
   shouldComponentUpdate(nextProps) {
     const hasNodeStateChanged = this.props.nodeState !== nextProps.nodeState;
-    return hasNodeStateChanged;
+    const isStartChanged = this.props.isStart !== nextProps.isStart;
+    const isEndChanged = this.props.isEnd !== nextProps.isEnd;
+
+    return hasNodeStateChanged || isStartChanged || isEndChanged;
   }
 
   /** Change State based on property nodeState */
@@ -35,6 +38,7 @@ export default class Node extends Component {
         <div
           id={`${row}:${col}`}
           onMouseUp={() => onMouseUp()}
+          onMouseDown={() => onMouseDown()}
           onDragStart={this.preventDragHandler}
           className="StartNode"
         ></div>
@@ -44,6 +48,7 @@ export default class Node extends Component {
         <div
           id={`${row}:${col}`}
           onMouseUp={() => onMouseUp()}
+          onMouseDown={() => onMouseDown()}
           onDragStart={this.preventDragHandler}
           className="EndNode"
         ></div>

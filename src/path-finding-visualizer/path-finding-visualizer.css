@@ -1,9 +1,16 @@
-.PathFindingVisualizer {
+/* .PathFindingVisualizer {
   display: flex;
-  position: absolute;
-  bottom: 0;
-  left: 0.75%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  position: relative;
+  align-items: flex-start;
+  justify-content:center;
+} */
+
+.PathFindingVisualizer {
+  width:100%;
+
+  position:fixed;
+
+  bottom:0px;
+
+  text-align:center;
 }

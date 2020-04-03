@@ -37,6 +37,7 @@ export default class MinHeap {
 
     insert(node) {
         this.heap.push(node);
+        this.map.set(`${node.row}:${node.col}`, node);
 
         let index = this.heap.length - 1;
 
@@ -48,7 +49,6 @@ export default class MinHeap {
 
 
             this.swap(index, Math.floor((index - 1) / 2))
-
             index = Math.floor((index - 1) / 2);
         }
     }
@@ -95,7 +95,7 @@ export default class MinHeap {
         this.heap[heapIndex].distance = distance;
 
         // heapify tree
-        while (heapIndex > 0 && this.heap[heapIndex].distance < this.heap[Math.floor((heapIndex - 1) / 2)].distance) {
+        while (heapIndex !== 0 && this.heap[heapIndex].distance < this.heap[Math.floor((heapIndex - 1) / 2)].distance) {
             this.swap(heapIndex, Math.floor((heapIndex - 1) / 2))
             heapIndex = Math.floor((heapIndex - 1) / 2);
         }
@@ -114,51 +114,5 @@ export default class MinHeap {
 
         this.map.set(`${this.heap[index1].row}:${this.heap[index1].col}`, index1)
         this.map.set(`${this.heap[index2].row}:${this.heap[index2].col}`, index2)
-    }
-
-
-    test() {
-        const node1 = {
-            row: 0,
-            col: 0,
-            distance: 1
-        };
-        const node2 = {
-            row: 1,
-            col: 0,
-            distance: 2
-        };
-        const node3 = {
-            row: 2,
-            col: 0,
-            distance: 8
-        };
-        const node4 = {
-            row: 3,
-            col: 0,
-            distance: 7
-        };
-        const node5 = {
-            row: 4,
-            col: 0,
-            distance: 5
-        };
-
-        this.insert(node1);
-        this.insert(node2);
-        this.insert(node3);
-        this.insert(node4);
-        this.insert(node5);
-
-
-        this.changeDistance(node5, 4)
-
-
-        console.log(this.remove());
-        console.log(this.remove());
-        console.log(this.remove());
-        console.log(this.remove());
-        console.log(this.remove());
-
     }
 }

@@ -2,10 +2,21 @@ import React, { Component } from "react";
 import Node from "./node";
 import NodeStates from "./node-states";
 import "./grid.css";
-import { execute, getShortestPath } from "../algorithms/dijkstra";
+import { executeDijkstra } from "../algorithms/dijkstra";
+import { executeAStar, getShortestPath } from "../algorithms/a-star";
 
-let START_INDEX = [10, 5];
-let END_INDEX = [10, 30];
+let FIRST_START_INDEX = [10, 5];
+let FIRST_END_INDEX = [10, 30];
+
+let startNodeIndex = {
+  row: FIRST_START_INDEX[0],
+  col: FIRST_START_INDEX[1]
+};
+
+let endNodeIndex = {
+  row: FIRST_END_INDEX[0],
+  col: FIRST_END_INDEX[1]
+};
 
 export default class Grid extends Component {
   constructor(props) {
@@ -16,21 +27,29 @@ export default class Grid extends Component {
       grid: [],
       isMouseDown: false
     };
-    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 
-    this.updateArrayLength();
+    this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
 
   // general method to visualize any pathfinding algorithm
   executePathfinding() {
-    if(this.isVisusualizing)
-      return;
+    if (this.isVisusualizing) return;
 
-    clearVisitedNodes(this.state.grid);
-    const grid = replaceGrid(this.state.grid);
+    const grid = this.state.grid;
+    const newGrid = replaceGrid(grid);
+    clearVisitedNodes(newGrid);
 
-    const visitedNodesInOrder = execute(grid, grid[10][5], grid[10][30]);
-    const shortestPathNodes = getShortestPath(grid[10][30]);
+    const visitedNodesInOrder = executeAStar(
+      newGrid,
+      newGrid[startNodeIndex.row][startNodeIndex.col],
+      newGrid[endNodeIndex.row][endNodeIndex.col]
+    );
+
+    const shortestPathNodes = getShortestPath(
+      newGrid[startNodeIndex.row][startNodeIndex.col],
+      newGrid[endNodeIndex.row][endNodeIndex.col]
+    );
+
     this.visualize(visitedNodesInOrder, shortestPathNodes);
   }
 
@@ -38,16 +57,16 @@ export default class Grid extends Component {
   visualize(visitedNodesInOrder, shortestPath) {
     this.isVisusualizing = true;
 
-    if(visitedNodesInOrder.length === 1){
+    if (visitedNodesInOrder.length === 1) {
       this.isVisusualizing = false;
       return;
     }
 
-
     for (let i = 1; i < visitedNodesInOrder.length; i++) {
       if (i === visitedNodesInOrder.length - 1) {
-        setTimeout(() => {
+        this.shortestPathTimeout = setTimeout(() => {
           if (shortestPath !== null) this.visualizeShortestPath(shortestPath);
+          return;
         }, 5 * i);
       }
 
@@ -55,10 +74,9 @@ export default class Grid extends Component {
       const col = visitedNodesInOrder[i].col;
 
       const node = document.getElementById(`${row}:${col}`);
-      setTimeout(() => {
+      this.visitedAnimationTimeout = setTimeout(() => {
+        visitedNodesInOrder[i].nodeState = NodeStates.VISITED;
         node.className = "VisitedNode";
-        if (i === visitedNodesInOrder.length - 1) {
-        }
       }, 5 * i);
     }
   }
@@ -68,7 +86,7 @@ export default class Grid extends Component {
     const grid = this.state.grid;
     this.isVisusualizing = true;
 
-    if(shortestPath.length === 1){
+    if (shortestPath.length === 1) {
       this.isVisusualizing = false;
       return;
     }
@@ -80,7 +98,10 @@ export default class Grid extends Component {
       const node = document.getElementById(`${row}:${col}`);
 
       setTimeout(() => {
-        if (node !== null) node.className = "ShortestPathNode";
+        if (node !== null) {
+          shortestPath[i].nodeState = NodeStates.SHORTESTPATH;
+          node.className = "ShortestPathNode";
+        }
         if (i === shortestPath.length - 1) {
           this.isVisusualizing = false;
         }
@@ -95,12 +116,21 @@ export default class Grid extends Component {
     this.setState({ grid: newGrid });
   }
 
+  reset() {
+    const newGrid = createGrid(this.rowCount, this.colCount, this.nodeSize);
+    this.setState({ grid: newGrid });
+    clearVisitedNodes(this.state.grid);
+    this.isVisusualizing = false;
+    clearTimeout(this.visitedAnimationTimeout);
+    clearTimeout(this.shortestPathTimeout);
+  }
+
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateWindowDimensions);
   }
 
   updateWindowDimensions() {
-    this.updateArrayLength();
+    this.updateArrayLength2();
 
     this.setState({
       grid: createGrid(this.rowCount, this.colCount, this.nodeSize)
@@ -109,38 +139,80 @@ export default class Grid extends Component {
     this.setState({ width: window.innerWidth, height: window.innerHeight });
   }
 
-  updateArrayLength() {
-    this.nodeSize = 28;
-    this.rowCount =
-      (window.innerHeight - window.innerHeight / 5) / this.nodeSize;
-    this.colCount =
-      (window.innerWidth - window.innerWidth / 16) / this.nodeSize;
+  updateArrayLength2() {
+    this.nodeSize = 24;
+    this.rowCount = Math.floor(
+      (window.innerHeight - window.innerHeight / 5) / this.nodeSize
+    );
+    this.colCount = Math.floor(
+      (window.innerWidth - window.innerWidth / 18) / this.nodeSize
+    );
+
+    let root = document.documentElement;
+    root.style.setProperty("--nodeSize", this.nodeSize + "px");
+
+    console.log(window.innerWidth);
+    console.log(this.nodeSize);
   }
 
   handleMouseDown(row, col) {
     if (this.isVisusualizing) return;
 
-    const newGrid = setNodeInGrid(this.state.grid, row, col);
-    this.setState({ grid: newGrid, isMouseDown: true });
+    // set nextNodeState depending on current state of the node
+    let nextNodeState = NodeStates.WALL;
+    if (this.state.grid[row][col].nodeState === NodeStates.WALL) {
+      nextNodeState = NodeStates.UNVISITED;
+    }
+
+    // set beginDragStart on StartNode click
+    if (this.state.grid[row][col].isStart) {
+      this.beginDragStart = true;
+      return;
+    }
+
+    // set beginDragEnd on EndNode click
+    if (this.state.grid[row][col].isEnd) {
+      this.beginDragEnd = true;
+      return;
+    }
+
+    // set State to t
+    this.tempGrid = setNodeInGrid(this.state.grid, row, col, nextNodeState);
+    this.setState({ isMouseDown: true });
   }
 
-  handleMouseLeave = () => {
+  handleMouseLeave = (row, col) => {
     if (this.isVisusualizing) return;
     this.setState({ isMouseDown: false });
   };
 
   handleMouseUp() {
     if (this.isVisusualizing) return;
-    this.setState({ isMouseDown: false });
+
+    if (this.beginDragStart) this.beginDragStart = false;
+    else if (this.beginDragEnd) this.beginDragEnd = false;
+
+    // set new grid and isMouseDown in state
+    this.setState({ grid: this.tempGrid, isMouseDown: false });
   }
 
   handleMouseEnter(row, col) {
     if (this.isVisusualizing) return;
 
-    const grid = this.state.grid;
-    if (this.state.isMouseDown) {
-      const newGrid = setNodeInGrid(grid, row, col);
-      this.setState({ grid: newGrid });
+    const node = document.getElementById(`${row}:${col}`);
+    const grid = this.tempGrid;
+
+    if (this.beginDragStart) {
+      node.className = "StartNode";
+      this.tempGrid = setStartNode(this.state.grid, row, col);
+      return;
+    } else if (this.beginDragEnd) {
+      node.className = "EndNode";
+      this.tempGrid = setEndNode(this.state.grid, row, col);
+      return;
+    } else if (this.state.isMouseDown) {
+      node.className = "WallNode";
+      this.tempGrid = setNodeInGrid(grid, row, col, NodeStates.WALL);
     }
   }
 
@@ -155,7 +227,8 @@ export default class Grid extends Component {
         onDragStart={this.preventDragHandler}
         onMouseLeave={this.handleMouseLeave}
       >
-        <button  onClick={() => this.executePathfinding()}>Visualize</button>
+        <button onClick={() => this.executePathfinding()}>Visualize</button>
+        <button onClick={() => this.reset()}>Reset</button>
         {this.state.grid.map((row, rowI) => {
           return (
             <div key={rowI}>
@@ -171,6 +244,9 @@ export default class Grid extends Component {
                   onMouseUp={() => this.handleMouseUp()}
                   onMouseDown={() => this.handleMouseDown(node.row, node.col)}
                   onMouseEnter={() => this.handleMouseEnter(node.row, node.col)}
+                  onMouseLeave={() =>
+                    this.handleMouseLeave(node, row, node.col)
+                  }
                   onDragStart={this.preventDragHandler} // prevents drag on this component
                   key={`${node.row}:${node.col}`}
                 />
@@ -205,8 +281,8 @@ const createNode = (row, col) => {
   let isStart = false;
   let isEnd = false;
 
-  if (row === START_INDEX[0] && col === START_INDEX[1]) isStart = true;
-  else if (row === END_INDEX[0] && col === END_INDEX[1]) isEnd = true;
+  if (row === startNodeIndex.row && col === startNodeIndex.col) isStart = true;
+  else if (row === endNodeIndex.row && col === endNodeIndex.col) isEnd = true;
 
   return {
     row,
@@ -214,25 +290,66 @@ const createNode = (row, col) => {
     isStart: isStart,
     isEnd: isEnd,
     distance: Infinity,
+    gCost: 0,
+    hCost: 0,
     previousNode: null,
     nodeState: NodeStates.UNVISITED
   };
 };
 
-const setNodeInGrid = (grid, row, col) => {
-  const newGrid = grid;
-  const node = newGrid[row][col];
+const setNodeInGrid = (grid, row, col, nodeState) => {
+  // const newGrid = grid;
+  const node = grid[row][col];
 
-  let nodeState;
-
-  if (node.nodeState === NodeStates.WALL) nodeState = NodeStates.UNVISITED;
-  else nodeState = NodeStates.WALL;
+  // if (node.nodeState === NodeStates.WALL) nodeState = NodeStates.UNVISITED;
+  // else nodeState = NodeStates.WALL;
 
   const newNode = {
     ...node,
     nodeState: nodeState
   };
-  newGrid[row][col] = newNode;
+  grid[row][col] = newNode;
+  return grid;
+};
+
+const setStartNode = (grid, row, col) => {
+  const newGrid = grid;
+  const node = newGrid[row][col];
+
+  const newStartNode = {
+    ...node,
+    isStart: true
+  };
+
+  newGrid[row][col] = newStartNode;
+  newGrid[startNodeIndex.row][startNodeIndex.col].isStart = false;
+  document.getElementById(
+    `${startNodeIndex.row}:${startNodeIndex.col}`
+  ).className = "Node";
+
+  startNodeIndex.row = row;
+  startNodeIndex.col = col;
+
+  return newGrid;
+};
+
+const setEndNode = (grid, row, col) => {
+  const newGrid = grid;
+  const node = newGrid[row][col];
+
+  const newEndNode = {
+    ...node,
+    isEnd: true
+  };
+
+  newGrid[row][col] = newEndNode;
+  newGrid[endNodeIndex.row][endNodeIndex.col].isEnd = false;
+  document.getElementById(`${endNodeIndex.row}:${endNodeIndex.col}`).className =
+    "Node";
+
+  endNodeIndex.row = row;
+  endNodeIndex.col = col;
+
   return newGrid;
 };
 
@@ -240,6 +357,7 @@ const replaceGrid = grid => {
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[0].length; j++) {
       if (grid[i][j].nodeState === NodeStates.WALL) {
+        grid[i][j] = createNode(i, j);
         grid[i][j].nodeState = NodeStates.WALL;
       } else {
         grid[i][j] = createNode(i, j);
@@ -254,15 +372,14 @@ const clearVisitedNodes = grid => {
     for (let j = 0; j < grid[0].length; j++) {
       const node = document.getElementById(`${i}:${j}`);
 
-      if (i === START_INDEX[0] && j === START_INDEX[1]){
-        node.className = 'StartNode';
+      if (i === startNodeIndex.row && j === startNodeIndex.col) {
+        node.className = "StartNode";
         continue;
       }
-      if (i === END_INDEX[0] && j === END_INDEX[1]){
-        node.className = 'EndNode';
+      if (i === endNodeIndex.row && j === endNodeIndex.col) {
+        node.className = "EndNode";
         continue;
       }
-
       if (grid[i][j].nodeState === NodeStates.WALL) {
         continue;
       } else {
