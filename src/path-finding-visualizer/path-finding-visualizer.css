@@ -1,14 +1,110 @@
 .PathFindingVisualizer {
-  width: 100%;
-  height:100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-
+  height: 100vh;
 }
 
-.DropDownDiv{
+.DropDownContainer {
   display: flex;
+  width: 100%;
   align-items: center;
-  justify-content: 'center';
+  justify-items: center;
+  justify-content: center;
+  align-content: center;
+}
+
+.Header {
+  display: flex;
+  width: 100%;
+  height: 6em;
+  margin-top: 0;
+  background-color: rgb(38, 63, 100);
+  flex-direction: row;
+  align-self: flex-start;
+  justify-self: flex-start;
+}
+
+.VisualizeButton {
+  /* width: 150px;
+  height: 35px; */
+  margin-right: 50px;
+  padding: 10px;
+  font-size: 18px;
+  background-color: rgb(216, 30, 91);
+  color: White;
+  border-width: 0px;
+  border-radius: 4px;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.ResetButton {
+  width: 150px;
+  height: 35px;
+  text-align: left;
+  margin-right: 50px;
+  font-size: 18px;
+  background-color: rgb(38, 63, 100);
+  color: White;
+  padding: 0px;
+  border-width: 0px;
+  border-radius: 4px;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#DropDown {
+  background-color: rgb(38, 63, 100);
+  color: white;
+  font-size: 18px;
+  border-width: 0px;
+  padding: 0px;
+  margin-right: 50px;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#DropDown:hover {
+  background-color: rgb(38, 63, 100);
+  color: rgb(89, 201, 165);
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#DropDown:focus {
+  background-color: rgb(38, 63, 100);
+  color: rgb(89, 201, 165);
+  border-width: 0px;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+#MenuItem:focus {
+  background-color: rgb(89, 201, 165) !important;
+}
+
+.TitleText {
+  color: White;
+  width: max-content;
+  user-select: none;
+  margin-left: 25px;
+  /* supported by Chrome and Opera */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+}
+
+.TitleContainer {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  justify-items: center;
+  align-content: center;
+  justify-content: center;
 }

@@ -4,7 +4,7 @@ import PathFindingVisualizer from './path-finding-visualizer/path-finding-visual
 
 function App() {
   return (
-    <PathFindingVisualizer></PathFindingVisualizer>
+      <PathFindingVisualizer></PathFindingVisualizer>
   );
 }
 

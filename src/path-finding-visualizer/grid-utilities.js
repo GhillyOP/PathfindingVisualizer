@@ -1,6 +1,11 @@
-import NodeStates from './node-states'
+import NodeStates from "./node-states";
 
-export const createGrid = (rowCount, colCount, startNodeIndex, endNodeIndex) => {
+export const createGrid = (
+  rowCount,
+  colCount,
+  startNodeIndex,
+  endNodeIndex
+) => {
   let grid = [];
   for (let i = 0; i < rowCount; i++) {
     let row = [];
@@ -28,8 +33,9 @@ export const createNode = (row, col, startNodeIndex, endNodeIndex) => {
     distance: Infinity,
     gCost: 0,
     hCost: 0,
+    closed: false,
     previousNode: null,
-    nodeState: NodeStates.UNVISITED
+    nodeState: NodeStates.UNVISITED,
   };
 };
 
@@ -38,7 +44,7 @@ export const setNodeInGrid = (grid, row, col, nodeState) => {
 
   const newNode = {
     ...node,
-    nodeState: nodeState
+    nodeState: nodeState,
   };
   grid[row][col] = newNode;
   return grid;
@@ -50,7 +56,7 @@ export const setStartNode = (grid, row, col, startNodeIndex) => {
 
   const newStartNode = {
     ...node,
-    isStart: true
+    isStart: true,
   };
 
   newGrid[row][col] = newStartNode;
@@ -71,7 +77,7 @@ export const setEndNode = (grid, row, col, endNodeIndex) => {
 
   const newEndNode = {
     ...node,
-    isEnd: true
+    isEnd: true,
   };
 
   newGrid[row][col] = newEndNode;
@@ -91,6 +97,7 @@ export const replaceGrid = (grid, startNodeIndex, endNodeIndex) => {
       if (grid[i][j].nodeState === NodeStates.WALL) {
         grid[i][j] = createNode(i, j, startNodeIndex, endNodeIndex);
         grid[i][j].nodeState = NodeStates.WALL;
+        grid[i][j].closed = false;
       } else {
         grid[i][j] = createNode(i, j, startNodeIndex, endNodeIndex);
       }

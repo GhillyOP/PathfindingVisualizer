@@ -5,13 +5,12 @@ import NodeStates from "./node-states";
 import {
   createGrid,
   replaceGrid,
-  setNodeInGrid,
-  setStartNode,
-  setEndNode,
   clearVisitedNodes,
 } from "./grid-utilities";
 import { executeAStar, getShortestPath } from "../algorithms/a-star";
+import { executeDijkstra } from "../algorithms/dijkstra";
 import Dropdown from "react-bootstrap/Dropdown";
+import DropdownButton from "react-bootstrap/Dropdownbutton";
 
 let FIRST_START_INDEX = [10, 5];
 let FIRST_END_INDEX = [10, 30];
@@ -20,6 +19,8 @@ export default class PathFindindVisualizer extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      selectedAlgo: executeDijkstra,
+      selectedAlgoName: "Dijkstra",
       width: 0,
       height: 0,
       grid: [],
@@ -47,6 +48,7 @@ export default class PathFindindVisualizer extends Component {
       this.startNodeIndex,
       this.endNodeIndex
     );
+    this.setState({selectedAlgo: executeDijkstra, selectedAlgoName: "Dijkstra"});
     this.setState({ grid: newGrid });
   }
 
@@ -104,7 +106,7 @@ export default class PathFindindVisualizer extends Component {
 
     clearVisitedNodes(newGrid, this.startNodeIndex, this.endNodeIndex);
 
-    const visitedNodesInOrder = executeAStar(
+    const visitedNodesInOrder = this.state.selectedAlgo(
       newGrid,
       newGrid[this.startNodeIndex.row][this.startNodeIndex.col],
       newGrid[this.endNodeIndex.row][this.endNodeIndex.col]
@@ -175,7 +177,6 @@ export default class PathFindindVisualizer extends Component {
   }
 
   updateGrid = (newGrid) => {
-    console.log("GRID SHOULD UPDATE");
     this.setState({ grid: newGrid });
   };
 
@@ -184,25 +185,38 @@ export default class PathFindindVisualizer extends Component {
     this.endNodeIndex = endNode;
   };
 
-  render() {
-    return (
-      <div className="PathFindingVisualizer">
-        <div className="DropDownDiv">
-          <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic">
-              Dropdown Button
-            </Dropdown.Toggle>
+  selectAlgorithm = (selectedAlgo) => {
+    if (selectedAlgo === "Dijkstra")  this.setState({selectedAlgo: executeDijkstra, selectedAlgoName: "Dijkstra"});
 
-            <Dropdown.Menu>
-              <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-              <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-              <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+
+    if (selectedAlgo === "A*")  this.setState({selectedAlgo: executeAStar, selectedAlgoName: "A*"});
+
+  };
+
+  render() {
+    
+    return (
+      <div style = {{height:"100vh"}} className="PathFindingVisualizer">
+        <div className="Header">
+          <div className="TitleContainer">
+            <h1 className="TitleText">Pathfinding Visualizer</h1>
+          </div>
+          <div className="DropDownContainer">
+            <DropdownButton id="DropDown" title="Pathfinding">
+                <Dropdown.Item id="MenuItem" onClick={()=> this.selectAlgorithm('Dijkstra')}>Dijkstra's Algorithm</Dropdown.Item>
+                <Dropdown.Item id="MenuItem" onClick={()=> this.selectAlgorithm('A*')} as="button">A* Algorithm</Dropdown.Item>
+            </DropdownButton>
+
+              {/* <DropdownButton id="DropDown" title="Select Maze  ">
+                <Dropdown.Item id="MenuItem" as="button">Array</Dropdown.Item>
+                <Dropdown.Item id="MenuItem" as="button">Heap</Dropdown.Item>
+              </DropdownButton> */}
+
+            <button className="VisualizeButton" onClick={() => this.executePathfinding()}>Visualize { this.state.selectedAlgoName }</button>
+            <button className="ResetButton" onClick={() => this.reset()}>Reset</button>
+          </div>
         </div>
 
-        <button onClick={() => this.executePathfinding()}>Visualize</button>
-        <button onClick={() => this.reset()}>Reset</button>
 
         <Grid
           updateGrid={this.updateGrid}
