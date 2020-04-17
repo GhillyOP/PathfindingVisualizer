@@ -3,12 +3,9 @@ import Node from "./node";
 import NodeStates from "./node-states";
 import "./grid.css";
 import {
-  createGrid,
-  replaceGrid,
   setNodeInGrid,
   setStartNode,
   setEndNode,
-  clearVisitedNodes,
 } from "./grid-utilities";
 
 export default class Grid extends Component {
@@ -17,6 +14,9 @@ export default class Grid extends Component {
     this.state = {
       isMouseDown: false,
     };
+
+    this.startNodeIndex = props.startNodeIndex;
+    this.endNodeIndex = props.endNodeIndex;
   }
 
   handleMouseDown = (row, col) => {
@@ -68,9 +68,9 @@ export default class Grid extends Component {
 
     this.props.updateGrid(this.tempGrid);
     this.props.updateStartEndIndex(
-      this.props.startNodeIndex,
-      this.props.endNodeIndex
-    );
+      this.startNodeIndex,
+      this.endNodeIndex
+    )
   }
 
   handleMouseEnter = (row, col) => {
@@ -86,7 +86,7 @@ export default class Grid extends Component {
         this.props.gridData,
         row,
         col,
-        this.props.startNodeIndex
+        this.startNodeIndex
       );
       return;
     } else if (this.beginDragEnd) {
@@ -109,12 +109,15 @@ export default class Grid extends Component {
   };
 
   renderGrid() {
+    this.startNodeIndex = this.props.startNodeIndex;
+    this.endNodeIndex = this.props.endNodeIndex;
+
     return (
       <div className="GridContainer">
         <div
           className="Grid"
           onDragStart={this.preventDragHandler}
-          onMouseLeave={this.handleMouseLeave}
+          // onMouseLeave={this.handleMouseLeave}
           onMouseUp={() => this.handleMouseUp()}
           onMouseDown={() => this.handleMouseDownIntersect()}
         >
