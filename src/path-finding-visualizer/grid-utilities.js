@@ -50,16 +50,9 @@ export const setNodeInGrid = (grid, row, col, nodeState) => {
   return grid;
 };
 
-export const changeStartEnd = (grid, row, col) => {
-
-}
-
 export const setStartNode = (grid, row, col, startNodeIndex) => {
   const newGrid = grid;
   const node = newGrid[row][col];
-
-  if (grid[row][col].nodeState === NodeStates.WALL)
-    return newGrid;
 
   const newStartNode = {
     ...node,
@@ -134,25 +127,3 @@ export const clearVisitedNodes = (grid, startNodeIndex, endNodeIndex) => {
     }
   }
 };
-
-export const clearWallNodes = (grid, startNodeIndex, endNodeIndex) => {
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[0].length; j++) {
-      const node = document.getElementById(`${i}:${j}`);
-
-      if (i === startNodeIndex.row && j === startNodeIndex.col) {
-        node.className = "StartNode";
-        continue;
-      }
-      if (i === endNodeIndex.row && j === endNodeIndex.col) {
-        node.className = "EndNode";
-        continue;
-      }
-      if (grid[i][j].nodeState === NodeStates.WALL) {
-        node.className = "Node";
-      } else {
-        node.className = "Node";
-      }
-    }
-  }
-}

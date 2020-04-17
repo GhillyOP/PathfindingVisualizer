@@ -5,7 +5,6 @@ export function executeAStar(grid, startNode, endNode) {
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[0].length; j++) {
       grid[i][j].distance = 0;
-      grid[i][j].closed = false;
     }
   }
 
@@ -56,7 +55,7 @@ export function executeAStar(grid, startNode, endNode) {
 
       if (
         open.getNodeAt(`${neighbours[i].row}:${neighbours[i].col}`) ===
-        undefined ||
+          undefined ||
         gCost < neighbours[i].gCost
       ) {
         neighbours[i].previousNode = closestNode;
