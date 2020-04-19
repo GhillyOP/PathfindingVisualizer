@@ -12,6 +12,7 @@ export default class Grid extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isVisualizing: false,
       isMouseDown: false,
     };
 
@@ -20,7 +21,7 @@ export default class Grid extends Component {
   }
 
   handleMouseDown = (row, col) => {
-    if (this.isVisusualizing) return;
+    if (this.props.isVisualizing) return;
 
     // set nextNodeState depending on current state of the node
     let nextNodeState = NodeStates.WALL;
@@ -46,18 +47,20 @@ export default class Grid extends Component {
   };
 
   handleMouseDownIntersect = () => {
-    if (this.isVisusualizing) return;
+    if (this.state.isVisusualizing) return;
     this.tempGrid = this.props.gridData;
     this.setState({ isMouseDown: true });
   };
 
-  handleMouseLeave = () => {
-    if (this.isVisusualizing) return;
-    this.setState({ isMouseDown: false });
+  handleMouseLeave = (row, col) => {
+    if (this.beginDragStart || this.beginDragEnd) {
+      const node = this.props.gridData[row][col]
+      node.nodeState = node.previousState
+    }
   };
 
   handleMouseUp() {
-    if (this.isVisusualizing) return;
+    if (this.props.isVisualizing) return;
     if (!this.state.isMouseDown) return;
 
     if (this.beginDragStart) this.beginDragStart = false;
@@ -74,7 +77,7 @@ export default class Grid extends Component {
   }
 
   handleMouseEnter = (row, col) => {
-    if (this.isVisusualizing) return;
+    if (this.props.isVisualizing) return;
     if (!this.state.isMouseDown) return;
 
     const node = document.getElementById(`${row}:${col}`);
@@ -137,9 +140,7 @@ export default class Grid extends Component {
                     onMouseUp={() => this.handleMouseUp()}
                     onMouseDown={() => this.handleMouseDown(node.row, node.col)}
                     onMouseEnter={() => this.handleMouseEnter(node.row, node.col)}
-                    onMouseLeave={() =>
-                      this.handleMouseLeave(node, row, node.col)
-                    }
+                    onMouseLeave={() => this.handleMouseLeave(node.row, node.col)}
                     onDragStart={this.preventDragHandler} // prevents drag on this component
                     key={`${node.row}:${node.col}`}
                   />

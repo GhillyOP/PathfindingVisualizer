@@ -2,6 +2,8 @@ import NodeStates from "../path-finding-visualizer/node-states";
 import MinHeap from "../data-structures/min-heap";
 
 export function executeAStar(grid, startNode, endNode) {
+  startNode.nodeState = NodeStates.UNVISITED;
+  endNode.nodeState = NodeStates.UNVISITED
   for (let i = 0; i < grid.length; i++) {
     for (let j = 0; j < grid[0].length; j++) {
       grid[i][j].distance = 0;
@@ -131,7 +133,6 @@ export const getShortestPath = (startNode, endNode) => {
   let currentNode = endNode;
   while (currentNode !== startNode) {
     if (currentNode === null || currentNode === undefined) break;
-    // currentNode.nodeState = NodeStates.SHORTESTPATH;
     shortestPath.push(currentNode);
     currentNode = currentNode.previousNode;
   }

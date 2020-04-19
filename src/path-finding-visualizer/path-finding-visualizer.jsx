@@ -9,13 +9,11 @@ import {
   clearWallNodes,
 } from "./grid-utilities";
 import { executeBinaryTree } from '../algorithms/binary-tree'
+import { executeRandom } from '../algorithms/random'
 import { executeAStar, getShortestPath } from "../algorithms/a-star";
 import { executeDijkstra } from "../algorithms/dijkstra";
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/Dropdownbutton";
-
-let FIRST_START_INDEX = [10, 5];
-let FIRST_END_INDEX = [10, 30];
 
 export default class PathFindindVisualizer extends Component {
   constructor(props) {
@@ -23,8 +21,11 @@ export default class PathFindindVisualizer extends Component {
     this.state = {
       selectedAlgo: executeDijkstra,
       selectedAlgoName: "Dijkstra",
+      selectedMazeAlgo: executeBinaryTree,
+      selectedMazeAlgoName: "Binary Tree",
       width: 0,
       height: 0,
+      isVisualizing: false,
       startNodeIndex: { row: 10, col: 5 },
       endNodeIndex: { row: 10, col: 30 },
       grid: [],
@@ -33,7 +34,6 @@ export default class PathFindindVisualizer extends Component {
     this.visitedAnimationTimeout = []
     this.shortestPathTimeout = [];
     this.isMaze = false;
-    this.isVisusualizing = false;
     this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
   }
 
@@ -125,11 +125,11 @@ export default class PathFindindVisualizer extends Component {
     this.setState({ grid: newGrid });
     clearVisitedNodes(this.state.grid, this.state.startNodeIndex, this.state.endNodeIndex);
     clearWallNodes(this.state.grid, this.state.startNodeIndex, this.state.endNodeIndex);
-    this.isVisusualizing = false;
+    this.setState({ isVisualizing: false });
   }
 
   executePathfinding() {
-    if (this.isVisusualizing) return;
+    if (this.state.isVisualizing) return;
 
     const grid = this.state.grid;
     const newGrid = replaceGrid(grid, this.state.startNodeIndex, this.state.endNodeIndex);
@@ -152,10 +152,10 @@ export default class PathFindindVisualizer extends Component {
 
   // Visualize visited nodes and shortest path (by calling visualizeShortestPath) on
   visualize = (visitedNodesInOrder, shortestPath) => {
-    this.isVisusualizing = true;
+    this.setState({ isVisualizing: true });
 
     if (visitedNodesInOrder.length === 1) {
-      this.isVisusualizing = false;
+      this.setState({ isVisualizing: false });
       return;
     }
 
@@ -181,10 +181,10 @@ export default class PathFindindVisualizer extends Component {
   // Visualize shortestPath from array recieved in params
   visualizeShortestPath(shortestPath) {
     const grid = this.state.grid;
-    this.isVisusualizing = true;
+    this.setState({ isVisualizing: true });
 
     if (shortestPath.length === 1) {
-      this.isVisusualizing = false;
+      this.setState({ isVisualizing: false });
       return;
     }
 
@@ -206,12 +206,12 @@ export default class PathFindindVisualizer extends Component {
     }
 
     setTimeout(() => {
-      this.isVisusualizing = false;
+      this.setState({ isVisualizing: false });
     }, toWaitBeforeEnded)
   }
 
   visualizeMaze() {
-    if (this.isVisusualizing) return;
+    if (this.state.isVisualizing) return;
 
     const newGrid = createGrid(
       this.rowCount,
@@ -224,13 +224,13 @@ export default class PathFindindVisualizer extends Component {
     clearVisitedNodes(newGrid, this.state.startNodeIndex, this.state.endNodeIndex);
     clearWallNodes(newGrid, this.state.startNodeIndex, this.state.endNodeIndex);
 
-    const maze = executeBinaryTree(
+    const maze = this.state.selectedMazeAlgo(
       newGrid,
       newGrid[this.state.startNodeIndex.row][this.state.startNodeIndex.col],
       newGrid[this.state.endNodeIndex.row][this.state.endNodeIndex.col]
     );
 
-    this.isVisusualizing = true;
+    this.setState({ isVisualizing: true });
     let toWaitBeforeEnded = 0;
 
     for (let i = 1; i < maze.length; i++) {
@@ -250,7 +250,7 @@ export default class PathFindindVisualizer extends Component {
     }
 
     setTimeout(() => {
-      this.isVisusualizing = false;
+      this.setState({ isVisualizing: false });
     }, toWaitBeforeEnded)
 
     this.isMaze = true;
@@ -267,10 +267,9 @@ export default class PathFindindVisualizer extends Component {
 
   selectAlgorithm = (selectedAlgo) => {
     if (selectedAlgo === "Dijkstra") this.setState({ selectedAlgo: executeDijkstra, selectedAlgoName: "Dijkstra" });
-
-
     if (selectedAlgo === "A*") this.setState({ selectedAlgo: executeAStar, selectedAlgoName: "A*" });
-
+    if (selectedAlgo === "BinaryTree") this.setState({ selectedMazeAlgo: executeBinaryTree, selectedMazeAlgoName: "Binary Tree" })
+    if (selectedAlgo === "Random") this.setState({ selectedMazeAlgo: executeRandom, selectedMazeAlgoName: "Random" })
   };
 
   render() {
@@ -280,19 +279,22 @@ export default class PathFindindVisualizer extends Component {
           <div className="TitleContainer">
             <h1 className="TitleText">Pathfinding Visualizer</h1>
           </div>
+
           <div className="DropDownContainer">
-            <DropdownButton id="DropDown" title="Pathfinding">
+            <DropdownButton id="DropDown" title="Pathfinding Algorithm ">
               <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm('Dijkstra')}>Dijkstra's Algorithm</Dropdown.Item>
               <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm('A*')} as="button">A* Algorithm</Dropdown.Item>
             </DropdownButton>
 
-            {/* <DropdownButton id="DropDown" title="Select Maze  ">
-                <Dropdown.Item id="MenuItem" as="button">Array</Dropdown.Item>
-                <Dropdown.Item id="MenuItem" as="button">Heap</Dropdown.Item>
-              </DropdownButton> */}
-
             <button className="VisualizeButton" onClick={() => this.executePathfinding()}>Visualize {this.state.selectedAlgoName}</button>
-            <button className="VisualizeButton" onClick={() => this.visualizeMaze()}>Maze</button>
+            <button className="VisualizeButton" onClick={() => this.visualizeMaze()}>{this.state.selectedMazeAlgoName} Maze</button>
+
+            <DropdownButton id="DropDown" title="Maze Algorithm ">
+              <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm("BinaryTree")} as="button">Binary Tree</Dropdown.Item>
+              <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm("Random")} as="button">Random</Dropdown.Item>
+
+            </DropdownButton>
+
             <button className="ResetButton" onClick={() => this.reset()}>Reset</button>
           </div>
         </div>
@@ -304,8 +306,9 @@ export default class PathFindindVisualizer extends Component {
           gridData={this.state.grid}
           startNodeIndex={this.state.startNodeIndex}
           endNodeIndex={this.state.endNodeIndex}
+          isVisualizing={(this.state.isVisualizing)}
         />
-      </div>
+      </div >
     );
   }
 }

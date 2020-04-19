@@ -33,6 +33,7 @@ export const createNode = (row, col, startNodeIndex, endNodeIndex) => {
     distance: Infinity,
     gCost: 0,
     hCost: 0,
+    previousState: NodeStates.UNVISITED,
     closed: false,
     previousNode: null,
     nodeState: NodeStates.UNVISITED,
@@ -44,25 +45,22 @@ export const setNodeInGrid = (grid, row, col, nodeState) => {
 
   const newNode = {
     ...node,
+    previousNodeState: nodeState,
     nodeState: nodeState,
   };
   grid[row][col] = newNode;
   return grid;
 };
 
-export const changeStartEnd = (grid, row, col) => {
-
-}
-
 export const setStartNode = (grid, row, col, startNodeIndex) => {
   const newGrid = grid;
   const node = newGrid[row][col];
 
-  if (grid[row][col].nodeState === NodeStates.WALL)
-    return newGrid;
+  const previousState = node.nodeState;
 
   const newStartNode = {
     ...node,
+    previousState: previousState,
     isStart: true,
   };
 
@@ -70,7 +68,13 @@ export const setStartNode = (grid, row, col, startNodeIndex) => {
   newGrid[startNodeIndex.row][startNodeIndex.col].isStart = false;
   document.getElementById(
     `${startNodeIndex.row}:${startNodeIndex.col}`
-  ).className = "Node";
+  ).className = getClassFromState(grid[startNodeIndex.row][startNodeIndex.col].previousState);
+
+  document.getElementById(`${row}:${col}`)
+    .firstElementChild.className = "inside-start"
+
+  document.getElementById(`${startNodeIndex.row}:${startNodeIndex.col}`)
+    .firstElementChild.className = ""
 
   startNodeIndex.row = row;
   startNodeIndex.col = col;
@@ -82,15 +86,25 @@ export const setEndNode = (grid, row, col, endNodeIndex) => {
   const newGrid = grid;
   const node = newGrid[row][col];
 
+  const previousState = node.nodeState;
+
   const newEndNode = {
     ...node,
+    nodeState: NodeStates.UNVISITED,
+    previousState: previousState,
     isEnd: true,
   };
 
   newGrid[row][col] = newEndNode;
   newGrid[endNodeIndex.row][endNodeIndex.col].isEnd = false;
   document.getElementById(`${endNodeIndex.row}:${endNodeIndex.col}`).className =
-    "Node";
+    getClassFromState(grid[endNodeIndex.row][endNodeIndex.col].previousState);
+
+  document.getElementById(`${row}:${col}`)
+    .firstElementChild.className = "inside-end"
+
+  document.getElementById(`${endNodeIndex.row}:${endNodeIndex.col}`)
+    .firstElementChild.className = ""
 
   endNodeIndex.row = row;
   endNodeIndex.col = col;
@@ -155,4 +169,11 @@ export const clearWallNodes = (grid, startNodeIndex, endNodeIndex) => {
       }
     }
   }
+}
+
+const getClassFromState = (state) => {
+  if (state === NodeStates.UNVISITED) return "Node"
+  if (state === NodeStates.VISITED) return "VisitedNodeNoAnim"
+  if (state === NodeStates.WALL) return "WallNode"
+  if (state === NodeStates.SHORTESTPATH) return "ShortestPathNodeNoAnim"
 }

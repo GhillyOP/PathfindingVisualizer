@@ -31,7 +31,7 @@ export default class Node extends Component {
   }
 
   render() {
-    const { row, col, onMouseDown, onMouseEnter, onMouseUp } = this.props;
+    const { row, col, onMouseDown, onMouseEnter, onMouseUp, onMouseLeave } = this.props;
 
     if (this.props.isStart) {
       return (
@@ -41,7 +41,10 @@ export default class Node extends Component {
           onMouseDown={() => onMouseDown()}
           onDragStart={this.preventDragHandler}
           className="StartNode"
-        ></div>
+        >
+          <div id={`${row}inside${col}`}
+            className="inside-start"></div>
+        </div>
       );
     } else if (this.props.isEnd) {
       return (
@@ -51,7 +54,10 @@ export default class Node extends Component {
           onMouseDown={() => onMouseDown()}
           onDragStart={this.preventDragHandler}
           className="EndNode"
-        ></div>
+        >
+          <div id={`${row}inside${col}`}
+            className="inside-end"></div>
+        </div >
       );
     } else if (this.state.nodeState === NodeStates.WALL) {
       return (
@@ -59,9 +65,13 @@ export default class Node extends Component {
           id={`${row}:${col}`}
           onMouseUp={() => onMouseUp()}
           onMouseDown={() => onMouseDown()}
+          onMouseEnter={() => onMouseEnter(row, col)}
+          onMouseLeave={() => onMouseLeave(row, col)}
           onDragStart={this.preventDragHandler}
           className="WallNode"
-        ></div>
+        >
+          <div id={`${row}inside${col}`}></div>
+        </div>
       );
     } else if (this.state.nodeState === NodeStates.UNVISITED) {
       return (
@@ -70,9 +80,12 @@ export default class Node extends Component {
           onMouseDown={() => onMouseDown(row, col)}
           onMouseUp={() => onMouseUp()}
           onMouseEnter={() => onMouseEnter(row, col)}
+          onMouseLeave={() => onMouseLeave(row, col)}
           onDragStart={this.preventDragHandler}
           className="Node"
-        ></div>
+        >
+          <div id={`${row}inside${col}`} className=""></div>
+        </div>
       );
     } else if (this.state.nodeState === NodeStates.VISITED) {
       return (
@@ -81,9 +94,12 @@ export default class Node extends Component {
           onMouseUp={() => onMouseUp()}
           onMouseDown={() => onMouseDown()}
           onMouseEnter={() => onMouseEnter(row, col)}
+          onMouseLeave={() => onMouseLeave(row, col)}
           onDragStart={this.preventDragHandler}
-          className="VisitedNode"
-        ></div>
+          className="VisitedNodeNoAnim"
+        >
+          <div id={`${row}inside${col}`}></div>
+        </div>
       );
     } else if (this.state.nodeState === NodeStates.SHORTESTPATH) {
       return (
@@ -92,9 +108,12 @@ export default class Node extends Component {
           onMouseUp={() => onMouseUp()}
           onMouseDown={() => onMouseDown()}
           onMouseEnter={() => onMouseEnter(row, col)}
+          onMouseLeave={() => onMouseLeave(row, col)}
           onDragStart={this.preventDragHandler}
-          className="ShortestPathNode"
-        ></div>
+          className="ShortestPathNodeNoAnim"
+        >
+          <div id={`${row}inside${col}`}></div>
+        </div>
       );
     } else {
       return <div>no such state</div>;

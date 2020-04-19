@@ -2,12 +2,16 @@ import NodeStates from "../path-finding-visualizer/node-states";
 import MinHeap from "../data-structures/min-heap";
 
 export function executeDijkstra(grid, startNode, endNode) {
+  startNode.nodeState = NodeStates.UNVISITED;
+  endNode.nodeState = NodeStates.UNVISITED
   var t0 = performance.now();
 
   startNode.distance = 0;
   let unvisitedNodes = new MinHeap();
   unvisitedNodes = getAllNodesHeap(grid);
   const visitedNodesInOrder = [];
+
+  visitedNodesInOrder.push(startNode)
 
   while (unvisitedNodes.length !== 0) {
     const closestNode = unvisitedNodes.remove();

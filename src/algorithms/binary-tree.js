@@ -6,7 +6,8 @@ import {
 
 
 export function executeBinaryTree(grid, startNode, endNode) {
-
+    startNode.nodeState = NodeStates.UNVISITED;
+    endNode.nodeState = NodeStates.UNVISITED
     startNode.closed = true;
     endNode.closed = true;
 
