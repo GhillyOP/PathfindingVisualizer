@@ -5,110 +5,86 @@
   height: 100vh;
 }
 
-.DropDownContainer {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  justify-items: center;
-  justify-content: center;
-  align-content: center;
-}
-
 .Header {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-items: space-evenly;
+  justify-content: space-evenly;
+  align-content: center;
+
   width: 100%;
-  /* height: 6em; */
-  margin-top: 0;
   background-color: rgb(38, 63, 100);
   flex-direction: row;
-  align-self: flex-start;
-  justify-self: flex-start;
-  padding: 1%;
+  padding: 0.5%;
 }
 
-.VisualizeButton {
-  /* supported by Chrome and Opera */
-  -webkit-user-select: none;
-  /* Safari */
-  -khtml-user-select: none;
-  /* Konqueror HTML */
-  -moz-user-select: none;
-  /* Firefox */
-  -ms-user-select: none;
-  /* Internet Explorer/Edge */
-
+.MainButton {
   width: 160px;
   height: fit-content;
-  margin-right: 50px;
   padding: 10px;
+  margin: 0 25px;
   font-size: 18px;
   background-color: rgb(216, 30, 91);
   color: White;
+  border: none;
+  border-radius: 4px;
+  outline: none !important;
+}
+
+.MainButton:hover {
+  background-color: rgb(170, 22, 72);
+}
+
+.SimpleTextButton {
+  text-align: left;
+  font-size: 18px;
+  margin: 0 25px;
+  background-color: transparent;
+  color: White;
+  padding: 0px;
   border-width: 0px;
   border-radius: 4px;
   outline: none !important;
   box-shadow: none !important;
 }
 
-.ResetButton {
-  /* supported by Chrome and Opera */
-  -webkit-user-select: none;
-  /* Safari */
-  -khtml-user-select: none;
-  /* Konqueror HTML */
-  -moz-user-select: none;
-  /* Firefox */
-  -ms-user-select: none;
-  /* Internet Explorer/Edge */
-
-  text-align: left;
-  margin-right: 50px;
-  font-size: 18px;
-  background-color: rgb(38, 63, 100);
-  color: White;
-  margin-left: 75px;
-  padding: 0px;
-  border-width: 0px;
-  border-radius: 4px;
-  outline: none !important;
-  box-shadow: none !important;
+.SimpleTextButton:hover {
+  color: rgb(118, 218, 221);
 }
 
 #DropDown {
-  background-color: rgb(38, 63, 100);
+  background-color: transparent;
   color: white;
   font-size: 18px;
+  margin: 0 25px;
   border-width: 0px;
   padding: 0px;
-  margin-right: 50px;
   outline: none !important;
   box-shadow: none !important;
+  animation-duration: 0ms !important;
 }
 
 #DropDown:hover {
-  background-color: rgb(38, 63, 100);
-  color: rgb(89, 201, 165);
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-#DropDown:focus {
-  background-color: rgb(38, 63, 100);
-  color: rgb(89, 201, 165);
-  border-width: 0px;
-  outline: none !important;
-  box-shadow: none !important;
+  color: rgb(118, 218, 221);
 }
 
 #MenuItem:focus {
-  background-color: rgb(89, 201, 165) !important;
+  background-color: rgb(118, 218, 221) !important;
+}
+
+#MenuItem:hover {
+  background-color: rgb(118, 218, 221) !important;
 }
 
 .TitleText {
   color: White;
-  width: max-content;
-  user-select: none;
-  margin-left: 25px;
+  white-space: nowrap;
+}
+
+.TitleText,
+.MainButton,
+.SimpleTextButton {
   /* supported by Chrome and Opera */
   -webkit-user-select: none;
   /* Safari */
@@ -120,11 +96,10 @@
   /* Internet Explorer/Edge */
 }
 
-.TitleContainer {
-  display: flex;
-  width: fit-content;
-  align-items: center;
-  justify-items: center;
-  align-content: center;
-  justify-content: center;
+/* Disables transitions from bootstrap menus */
+#DropDown {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
 }

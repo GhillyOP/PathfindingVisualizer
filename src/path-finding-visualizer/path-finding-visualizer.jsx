@@ -70,8 +70,6 @@ export default class PathFindindVisualizer extends Component {
         startNodeIndex: { row: Math.floor(0), col: Math.floor(0) },
         endNodeIndex: { row: Math.floor(this.rowCount - 1), col: Math.floor(this.colCount - 1) },
       })
-      console.log("did resize")
-
     }
 
     const newGrid = createGrid(
@@ -276,27 +274,25 @@ export default class PathFindindVisualizer extends Component {
     return (
       <div style={{ height: "100vh" }} className="PathFindingVisualizer">
         <div className="Header">
-          <div className="TitleContainer">
-            <h1 className="TitleText">Pathfinding Visualizer</h1>
-          </div>
+          <h1 className="TitleText">Pathfinding Visualizer</h1>
 
-          <div className="DropDownContainer">
-            <DropdownButton id="DropDown" title="Pathfinding Algorithm ">
-              <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm('Dijkstra')}>Dijkstra's Algorithm</Dropdown.Item>
-              <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm('A*')} as="button">A* Algorithm</Dropdown.Item>
-            </DropdownButton>
+          <DropdownButton id="DropDown" title="Pathfinding Algorithm ">
+            <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm('Dijkstra')}>Dijkstra's Algorithm</Dropdown.Item>
+            <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm('A*')} as="button">A* Algorithm</Dropdown.Item>
+          </DropdownButton>
 
-            <button className="VisualizeButton" onClick={() => this.executePathfinding()}>Visualize {this.state.selectedAlgoName}</button>
-            <button className="VisualizeButton" onClick={() => this.visualizeMaze()}>{this.state.selectedMazeAlgoName} Maze</button>
+          <button className="MainButton" onClick={() => this.executePathfinding()}>Visualize {this.state.selectedAlgoName}</button>
 
-            <DropdownButton id="DropDown" title="Maze Algorithm ">
-              <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm("BinaryTree")} as="button">Binary Tree</Dropdown.Item>
-              <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm("Random")} as="button">Random</Dropdown.Item>
+          <DropdownButton id="DropDown" title="Maze Algorithm ">
+            <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm("BinaryTree")} as="button">Binary Tree</Dropdown.Item>
+            <Dropdown.Item id="MenuItem" onClick={() => this.selectAlgorithm("Random")} as="button">Random</Dropdown.Item>
+          </DropdownButton>
 
-            </DropdownButton>
+          <button className="MainButton" onClick={() => this.visualizeMaze()}>{this.state.selectedMazeAlgoName} Maze</button>
 
-            <button className="ResetButton" onClick={() => this.reset()}>Reset</button>
-          </div>
+
+          <button className="SimpleTextButton" onClick={() => this.reset()}>Reset</button>
+          <button className="SimpleTextButton">Help</button>
         </div>
 
 

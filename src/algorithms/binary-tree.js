@@ -11,6 +11,8 @@ export function executeBinaryTree(grid, startNode, endNode) {
     startNode.closed = true;
     endNode.closed = true;
 
+    let toReturn = [];
+
     for (let i = 1; i < grid.length; i += 2) {
         for (let j = 1; j < grid[0].length; j += 2) {
             let neighbours = [];
